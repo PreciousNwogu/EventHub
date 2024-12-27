@@ -1,0 +1,52 @@
+﻿@page "/new"
+@rendermode InteractiveServer
+@inject NavigationManager Navigator
+
+<PageTitle>EventHub | New Event</PageTitle>
+
+<div class="row">
+    <div class="col">
+        <EditForm Model="Event" class="p-5 bg-light border border-1" method="post" OnValidSubmit="() => CreateEventAsync()">
+            <DataAnnotationsValidator />
+            <h2 class="fw-normal text-center mb-3">New Event</h2>
+            <div class="row">
+                <div class="col-12 col-md-7 mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    <InputText @bind-Value="Event.Title" name="title" id="title" placeholder="Event Title"
+                        class="form-control mb-1" />
+                    <ValidationMessage For="() => Event.Title" />
+                </div>
+                <div class="col-12 col-md-5 mb-3">
+                    <label for="date" class="form-label">Date</label>
+                    <InputDate @bind-Value="Event.Date" name="date" id="date" class="form-control mb-1" />
+                    <ValidationMessage For="() => Event.Date" />
+                </div>
+                <div class="col-12 mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <InputText @bind-Value="Event.Email" type="email" name="email" id="email" placeholder="john.smith@email.com"
+                        class="form-control mb-1" />
+                    <ValidationMessage For="() => Event.Email" />
+                </div>
+            </div>
+
+            <button class="btn btn-primary me-3">Add Event</button>
+            <a href="/" class="btn btn-secondary">Cancel</a>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    public Event Event { get; set; } = new();
+
+    private async Task CreateEventAsync()
+    {
+        var sql = "INSERT INTO Event (Title, Date, Email) VALUES (@Title, @Date, @Email)";
+        await DataService.SaveData(sql, new {
+            Title = Event.Title,
+            Date = Event.Date.ToString("yyyy-MM-dd"),
+            Email = Event.Email
+        });
+        Navigator.NavigateTo("/");
+    }
+}

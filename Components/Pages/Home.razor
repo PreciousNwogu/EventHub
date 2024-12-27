@@ -1,0 +1,26 @@
+﻿@page "/"
+@rendermode InteractiveServer
+
+<PageTitle>EventHub | Events</PageTitle>
+
+<div class="row">
+    @foreach (var e in events)
+    {
+        <EventCard Event="e" OnDelete="GetEventsAsync" />
+    }
+</div>
+
+@code {
+    private List<Event> events = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetEventsAsync();
+    }
+
+    private async Task GetEventsAsync()
+    {
+        var sql = "SELECT * FROM Event";
+        events = await DataService.LoadData<Event, dynamic>(sql, new { });
+    }
+}
